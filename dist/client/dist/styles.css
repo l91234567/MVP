@@ -1,0 +1,39 @@
+#gameBox {
+  /* height: 600px;
+  width: 1000px;
+  border:solid blue;
+  text-align: center; */
+}
+#app {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+canvas {
+  border:solid red;
+}
+#task {
+
+  height: 5%;
+  width: 5%;
+  text-align: center;
+}
+#chatInput{
+  position: absolute;
+  bottom: 0;
+
+}
+#chatbox {
+  position: relative;
+  height: 500px;
+  border: solid black;
+  width: 300px;
+  margin-left: 1%;
+}
+#chatter{
+  max-height: 90px;
+  overflow-y: scroll;
+  scroll-behavior: auto;
+
+}
