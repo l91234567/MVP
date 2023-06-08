@@ -8,13 +8,14 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 canvas {
   border:solid red;
 }
 #task {
-
+  display: inline;
   height: 5%;
   width: 5%;
   text-align: center;
@@ -28,12 +29,19 @@ canvas {
   position: relative;
   height: 500px;
   border: solid black;
-  width: 300px;
+  width: 280px;
   margin-left: 1%;
 }
 #chatter{
-  max-height: 90px;
-  overflow-y: scroll;
-  scroll-behavior: auto;
+  max-height: 460px;
+  overflow-y:scroll;
 
+
+}
+#Options{
+  flex-direction: column;
+  display: flex;
+  height: 500px;
+  margin-right: 1%;
+  width: auto;
 }

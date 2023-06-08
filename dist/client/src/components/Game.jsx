@@ -1,10 +1,21 @@
 import { useRef, useState, useEffect, useContext } from 'react';
 import { SocketContext } from './socket.js';
-export default function Game() {
+export default function Game({ currentPlayerId }) {
     const socket = useContext(SocketContext);
-    socket.on('id', (data) => console.log('this is my id: ', data));
+    const [id, setId] = useState('-1');
+    socket.on('id', (data) => {
+        setId(data);
+    });
+    var connections = {};
+    socket.on('newConnect', (data) => {
+        connections = data.connections;
+    });
+    socket.on('disconnection', (data) => {
+        connections = data.connections;
+    });
     socket.on('drawing', (data) => {
-        const canvas = canvasRef.current;
+        var canvas = canvasRef.current;
+        context = canvas.getContext('2d');
         const x = data[0];
         const y = data[1];
         context.lineWidth = 3;
@@ -16,10 +27,11 @@ export default function Game() {
         context.moveTo(x, y);
     });
     socket.on('stopDrawing', (data) => {
+        var canvas = canvasRef.current;
+        context = canvas.getContext('2d');
         context.beginPath();
     });
     const canvasRef = useRef(null);
-    const [axisX, setAxisX] = useState(0);
     let isDrawing = false;
     let context;
     useEffect(() => {
@@ -34,15 +46,20 @@ export default function Game() {
         return () => {
             window.removeEventListener('resize', resizeCanvas);
         };
-    }, []);
+    }, [currentPlayerId]);
     function startDrawing(event) {
+        if (currentPlayerId !== id)
+            return;
         isDrawing = true;
         draw(event);
     }
     function draw(event) {
+        if (currentPlayerId !== id)
+            return;
         if (!isDrawing)
             return;
-        const canvas = canvasRef.current;
+        var canvas = canvasRef.current;
+        context = canvas.getContext('2d');
         const x = event.clientX - canvas.offsetLeft - 1;
         const y = event.clientY - canvas.offsetTop - 1;
         context.lineWidth = 3;
@@ -55,7 +72,11 @@ export default function Game() {
         socket.emit('drawing', [x, y]);
     }
     function stopDrawing() {
+        if (currentPlayerId !== id)
+            return;
         isDrawing = false;
+        var canvas = canvasRef.current;
+        context = canvas.getContext('2d');
         context.beginPath();
         socket.emit('stopDrawing', 'stop');
     }

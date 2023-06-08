@@ -1,15 +1,32 @@
 import react,{useRef, useState, useEffect, useContext} from 'react';
 import {SocketContext} from './socket.js';
 
-export default function Game() {
+type props = {
+  currentPlayerId:string
+}
+export default function Game({currentPlayerId}:props) {
 
   const socket = useContext(SocketContext);
+  const [id, setId] = useState('-1');
+  socket.on('id', (data:any)=>{
+    setId(data)
+  })
 
-  socket.on('id', (data:any)=>console.log('this is my id: ', data))
+
+  var connections:any = {};
+  socket.on('newConnect', (data:any) => {
+    connections = data.connections
+
+  })
+
+  socket.on('disconnection', (data:any) => {
+    connections = data.connections
+  })
 
   socket.on('drawing',(data:any)=>{
 
-    const canvas= canvasRef.current!;
+    var canvas= canvasRef.current!;
+    context = (canvas as HTMLCanvasElement).getContext('2d')
     const x = data[0];
     const y = data[1];
 
@@ -28,20 +45,29 @@ export default function Game() {
   })
 
   socket.on('stopDrawing', (data:string)=>{
+    var canvas= canvasRef.current!;
+    context = (canvas as HTMLCanvasElement).getContext('2d')
     context.beginPath();
   })
+
+
+
+
+
   const canvasRef = useRef(null)!;
 
-  const [axisX, setAxisX] = useState(0)
+
 
   let isDrawing = false;
   let context:any;
+
 
 
   useEffect(()=> {
 
     const canvas= canvasRef.current!;
     context = (canvas as HTMLCanvasElement).getContext('2d')
+
 
     const resizeCanvas = () => {
       (canvas as HTMLCanvasElement).width = 800;
@@ -54,19 +80,22 @@ export default function Game() {
     return () => {
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [])
+  }, [currentPlayerId])
 
   function startDrawing(event:any):any {
 
+    if(currentPlayerId !== id) return;
     isDrawing = true;
     draw(event);
   }
 
   function draw(event:any) {
+    if(currentPlayerId !== id) return;
     if (!isDrawing) return;
 
 
-    const canvas= canvasRef.current!;
+    var canvas= canvasRef.current!;
+    context = (canvas as HTMLCanvasElement).getContext('2d')
     const x = event.clientX - (canvas as HTMLCanvasElement).offsetLeft - 1;
     const y = event.clientY - (canvas as HTMLCanvasElement).offsetTop - 1;
 
@@ -82,8 +111,10 @@ export default function Game() {
   }
 
   function stopDrawing() {
+    if(currentPlayerId !== id) return;
     isDrawing = false;
-
+    var canvas= canvasRef.current!;
+    context = (canvas as HTMLCanvasElement).getContext('2d')
     context.beginPath();
     socket.emit('stopDrawing', 'stop')
   }
