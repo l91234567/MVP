@@ -56,19 +56,21 @@ io.on('connection', (socket:any) => {
   })
 
   socket.on('topicWords', (data:[string]) => {
-    if (socket.id === host){
+
       currentTopicWords = data;
       var index = Math.floor(Math.random() * data.length);
       targetWord = currentTopicWords[index]
       io.emit('targetWord', currentTopicWords[index]);
       currentTopicWords.splice(index, 1)
-    }
+
 
 
   })
 
   socket.on('changeWord', (data:string) => {
     if(currentTopicWords.length === 0) {
+      users[currentPlayerId].points += 2;
+        users[socket.id].points += 1;
       io.emit('gameOver', users)
       return;
     }
@@ -79,15 +81,18 @@ io.on('connection', (socket:any) => {
         users[currentPlayerId].points += 2;
         users[socket.id].points += 1;
 
-        currentTopicWords.splice(index, 1)
+
         currentPlayerId = data;
+
         let info = {
           currentPlayerId:currentPlayerId,
-          targetWord:currentTopicWords[index]
+          targetWord:currentTopicWords[index],
+          users:users
         }
         io.emit('currentRound',info)
         io.emit('currentPlayerId', currentPlayerId);
         io.emit('targetWord', currentTopicWords[index]);
+        currentTopicWords.splice(index, 1)
       }
 
 
@@ -106,7 +111,8 @@ io.on('connection', (socket:any) => {
     io.emit('currentPlayerId', currentPlayerId);
     let info = {
       currentPlayerId:currentPlayerId,
-      targetWord:targetWord
+      targetWord:targetWord,
+      users:users
     }
     io.emit('currentRound',info)
   })
@@ -147,6 +153,7 @@ io.on('connection', (socket:any) => {
 
       io.emit('host', host);
     } else {
+      delete users[socket.id]
       delete connections[socket.id];
     }
 

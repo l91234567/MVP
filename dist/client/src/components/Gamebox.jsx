@@ -12,7 +12,6 @@ export default function Gamebox() {
         setCurrentPlayerId(data);
     });
     socket.on('currentRound', (data) => {
-        console.log;
         var { currentPlayerId, targetWord } = data;
         if (currentPlayerId === socket.id) {
             setTask(` Draw ${targetWord}`);
@@ -22,6 +21,10 @@ export default function Gamebox() {
         }
     });
     const [task, setTask] = useState('');
+    socket.on('gameOver', (data) => {
+        setTask('');
+        setCurrentPlayerId('-1');
+    });
     var props = {
         currentPlayerId: currentPlayerId
     };

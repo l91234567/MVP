@@ -45,7 +45,28 @@ export default function Options() {
     const hostRef = useRef(null);
     const [topicSelect, setTopicSelect] = useState(false);
     socket.on('gameOver', (data) => {
-        console.log(data);
+        setTopicSelect(false);
+        var users = data;
+        let l = [];
+        for (var i in users) {
+            let t = {};
+            t.points = users[i].points;
+            t.id = i;
+            l.push(t);
+        }
+        setLeaderBoard(l);
+    });
+    const [leaderboard, setLeaderBoard] = useState([]);
+    socket.on('currentRound', (data) => {
+        var { currentPlayerId, targetWord, users } = data;
+        let l = [];
+        for (var i in users) {
+            let t = {};
+            t.points = users[i].points;
+            t.id = i;
+            l.push(t);
+        }
+        setLeaderBoard(l);
     });
     return (<>
   <div id="Options">
@@ -66,6 +87,13 @@ export default function Options() {
 
         <input id="startGameButton" type='button' value="Start" onClick={startButtonOnClick} disabled={topicSelect}></input>
 
+    </div>
+
+    <div id="leaderboard">
+    <h2>Leaderboard</h2>
+        {leaderboard.map((e, index) => {
+            return (<p key={index}>{e.id}: {e.points}</p>);
+        })}
     </div>
 
 

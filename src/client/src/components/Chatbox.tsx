@@ -17,7 +17,7 @@ export default function Chatbox() {
   var targetWord:string;
   socket.on('targetWord', (data:string)=>{
     targetWord = data;
-    console.log(data)
+
 
   })
 
@@ -69,14 +69,12 @@ export default function Chatbox() {
   const chatInputRef:any = useRef(null)!;
   const chatEnterRef:any = useRef(null)!;
 
-  const [currentPlayer, setCurrentPlayer] = useState();
-  const [previousPlayer, setPreviousPlayer] = useState();
 
 
 
   const enterButtonOnClick = (e:any) => {
     let message = chatInputRef.current.value
-    console.log(targetWord)
+
     var messageInfo = {
       clientId: clientId,
       message: message}

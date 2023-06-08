@@ -1,4 +1,4 @@
-import { useRef, useState, useContext } from 'react';
+import { useRef, useContext } from 'react';
 import { SocketContext } from './socket.js';
 export default function Chatbox() {
     const socket = useContext(SocketContext);
@@ -9,7 +9,6 @@ export default function Chatbox() {
     var targetWord;
     socket.on('targetWord', (data) => {
         targetWord = data;
-        console.log(data);
     });
     socket.on('message', (data) => {
         var { clientId, message } = data;
@@ -48,11 +47,8 @@ export default function Chatbox() {
     const chatterRef = useRef(null);
     const chatInputRef = useRef(null);
     const chatEnterRef = useRef(null);
-    const [currentPlayer, setCurrentPlayer] = useState();
-    const [previousPlayer, setPreviousPlayer] = useState();
     const enterButtonOnClick = (e) => {
         let message = chatInputRef.current.value;
-        console.log(targetWord);
         var messageInfo = {
             clientId: clientId,
             message: message

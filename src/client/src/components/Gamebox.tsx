@@ -22,7 +22,7 @@ export default function Gamebox(){
   })
 
   socket.on('currentRound', (data:any) =>{
-    console.log
+
     var {currentPlayerId, targetWord} = data;
     if(currentPlayerId === socket.id) {
       setTask(` Draw ${targetWord}`)
@@ -35,6 +35,10 @@ export default function Gamebox(){
 
   const [task, setTask] =useState('')
 
+  socket.on('gameOver', (data:any) => {
+    setTask('')
+    setCurrentPlayerId('-1')
+  })
 
 
 
